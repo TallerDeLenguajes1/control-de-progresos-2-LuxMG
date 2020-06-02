@@ -2,6 +2,7 @@ using System;
 using System.Text.RegularExpressions;
 
 class Personaje{
+	public enum Clases{ Guerrero, Mago, Arquero, Paladin, Clerigo, Cazador };
 	//DATOS:
 	private static string tipo;
 	private static string nombre;
@@ -13,18 +14,18 @@ class Personaje{
 	public const int maxEdad = 300;
 	public const int maxSalud = 100;
 
-	public string Tipo{get => tipo; set => tipo = value;}
-	public string Nombre{get => nombre; set => nombre = value;}
-	public string Apodo{get => apodo; set => apodo = value;}
-	public DateTime FechaNac{get => fechaNac; set => fechaNac = value;}
-	public int Edad{get => edad; set => edad = value;}
-	public int Salud{get => salud; set => salud = value;}
+	public string Tipo {get => tipo; set => tipo = value;}
+	public string Nombre {get => nombre; set => nombre = value;}
+	public string Apodo {get => apodo; set => apodo = value;}
+	public DateTime FechaNac {get => fechaNac; set => fechaNac = value;}
+	public int Edad {get => edad; set => edad = value;}
+	public int Salud {get => salud; set => salud = value;}
 
 	public void MostrarDatos() {
 		Console.WriteLine("Tipo: " + Tipo);
 		Console.WriteLine("Nombre: " + Nombre);
 		Console.WriteLine("Apodo: " + Apodo);
-		Console.WriteLine("Fecha de Nacimiento: " + FechaNac);
+		Console.WriteLine("Fecha de Nacimiento: " + FechaNac.ToString("dd/MM/yyyy"));
 		Console.WriteLine("Edad: " + Edad);
 		Console.WriteLine("Salud: " + Salud);
 	}
@@ -58,6 +59,7 @@ class Personaje{
 
 	public Personaje(string tipo, string nombre, string apodo, DateTime fechanac){
 		Random random = new Random(Environment.TickCount);
+
 		Velocidad = random.Next(maxVelocidad) + 1;
 		Destreza = random.Next(maxDestreza) + 1;
 		Fuerza = random.Next(maxFuerza) + 1;
@@ -69,11 +71,11 @@ class Personaje{
 		Apodo = apodo;
 		FechaNac = fechanac;
 		Edad = CalcularEdad(fechanac);
-		Salud = random.Next(maxSalud + 1);
+		Salud = maxSalud;
 	}
 
 	public void MostrarPersonaje(){
-		Console.WriteLine("Datos:");
+		Console.WriteLine("\nDatos:");
 		MostrarDatos();
 		Console.WriteLine("\nCaracteristicas:");
 		MostrarCaracteristicas();
@@ -85,6 +87,15 @@ class Personaje{
 		if (ahora < fechaNac.AddYears(edad)) edad--;
 		return edad;
 	}
+
+	public static void MostrarClases() {
+		Type clases = typeof(Clases);
+		int i = 0;
+		foreach(string s in Enum.GetNames(clases)){
+			Console.WriteLine("{0}. {1}", i, s);
+			i++;
+		}
+	}
 }
 
 class MainClass{
@@ -95,11 +106,18 @@ class MainClass{
 
 	public static Personaje CrearPersonaje(){
 		DateTime fecha;
-		string tipo, nombre, apodo, fec;
+		int t;
+		string tipo;
+		string nombre, apodo, fec;
 		string pattern = @"(\d+)(/)(\d+)(/)(\d+)";
 
-		Console.Write("Tipo de personaje: ");
-		tipo = Console.ReadLine();
+		Console.WriteLine("Elija su clase: ");
+		Personaje.MostrarClases();
+		Console.Write("Seleccion (numero): ");
+		t = Convert.ToInt16(Console.ReadLine());
+		Type clases = typeof(Personaje.Clases);
+		tipo = Enum.GetNames(clases)[t];
+
 		Console.Write("Nombre del personaje: ");
 		nombre = Console.ReadLine();
 		Console.Write("Apodo del personaje: ");
@@ -116,8 +134,8 @@ class MainClass{
 
 			fecha = new DateTime(anio,mes,dia);
 		}else{
-      fecha = DateTime.Now;
-    }
+			fecha = DateTime.Now;
+		}
 
 		Personaje Personaje1 = new Personaje(tipo,nombre,apodo,fecha);
 		return Personaje1;
