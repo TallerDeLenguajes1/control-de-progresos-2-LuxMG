@@ -1,75 +1,125 @@
 using System;
+using System.Text.RegularExpressions;
 
 class Personaje{
-	class Datos {
-		private static string tipo;
-		private static string nombre;
-		private static string apodo;
-		private static DateTime fechaNac;
-		private static int edad;
-		private static int salud;
+	//DATOS:
+	private static string tipo;
+	private static string nombre;
+	private static string apodo;
+	private static DateTime fechaNac;
+	private static int edad;
+	private static int salud;
 
-		public const int maxEdad = 300;
-		public const int maxSalud = 100;
+	public const int maxEdad = 300;
+	public const int maxSalud = 100;
 
-		public string Tipo{get; set;};
-		public string Nombre{get; set;};
-		public string Apodo{get; set;};
-		public DateTime FechaNac{get; set;};
-		public int Edad{get; set;};
-		public int Salud{get; set;};
+	public string Tipo{get => tipo; set => tipo = value;}
+	public string Nombre{get => nombre; set => nombre = value;}
+	public string Apodo{get => apodo; set => apodo = value;}
+	public DateTime FechaNac{get => fechaNac; set => fechaNac = value;}
+	public int Edad{get => edad; set => edad = value;}
+	public int Salud{get => salud; set => salud = value;}
 
-		public void MostrarDatos() {
-			Console.WriteLine("Tipo: " + Tipo);
-			Console.WriteLine("Nombre: " + Nombre);
-			Console.WriteLine("Apodo: " + Apodo);
-			Console.WriteLine("Fecha de Nacimiento: " + FechaNac);
-			Console.WriteLine("Edad: " + Edad);
-			Console.WriteLine("Salud: " + Salud);
-		}
+	public void MostrarDatos() {
+		Console.WriteLine("Tipo: " + Tipo);
+		Console.WriteLine("Nombre: " + Nombre);
+		Console.WriteLine("Apodo: " + Apodo);
+		Console.WriteLine("Fecha de Nacimiento: " + FechaNac);
+		Console.WriteLine("Edad: " + Edad);
+		Console.WriteLine("Salud: " + Salud);
 	}
 
-	class Caracteristicas {
-		public const int maxVelocidad = 10;
-		public const int maxDestreza = 5;
-		public const int maxFuerza = 10;
-		public const int maxNivel = 10;
-		public const int maxArmadura = 10;
+	//CARACTERISTICAS:
+	public const int maxVelocidad = 10;
+	public const int maxDestreza = 5;
+	public const int maxFuerza = 10;
+	public const int maxNivel = 10;
+	public const int maxArmadura = 10;
 
-		private static int velocidad;
-		private static int destreza;
-		private static int fuerza;
-		private static int nivel;
-		private static int armadura;
+	private static int velocidad;
+	private static int destreza;
+	private static int fuerza;
+	private static int nivel;
+	private static int armadura;
 
-		public int Velocidad{get; set;};
-		public int Destreza{get; set;};
-		public int Fuerza{get; set;};
-		public int Nivel{get; set;};
-		public int Armadura{get; set;};
+	public int Velocidad{get => velocidad; set => velocidad = value;}
+	public int Destreza{get => destreza; set => destreza = value;}
+	public int Fuerza{get => fuerza; set => fuerza = value;}
+	public int Nivel{get => nivel; set => nivel = value;}
+	public int Armadura{get => armadura; set => armadura = value;}
 
-		public void MostrarCaracteristicas() {
-			Console.WriteLine("Velocidad: " + Velocidad);
-			Console.WriteLine("Destreza: " + Destreza);
-			Console.WriteLine("Fuerza: " + Fuerza);
-			Console.WriteLine("Nivel: " + Nivel);
-			Console.WriteLine("Armadura: " + Armadura);
-		}
+	public void MostrarCaracteristicas() {
+		Console.WriteLine("Velocidad: " + Velocidad);
+		Console.WriteLine("Destreza: " + Destreza);
+		Console.WriteLine("Fuerza: " + Fuerza);
+		Console.WriteLine("Nivel: " + Nivel);
+		Console.WriteLine("Armadura: " + Armadura);
 	}
 
 	public Personaje(string tipo, string nombre, string apodo, DateTime fechanac){
 		Random random = new Random(Environment.TickCount);
-		Caracteristicas.Velocidad = random.Next(Caracteristicas.maxVelocidad) + 1;
-		Caracteristicas.Destreza = random.Next(Caracteristicas.maxDestreza) + 1;
-		Caracteristicas.Fuerza = random.Next(Caracteristicas.maxFuerza) + 1;
-		Caracteristicas.Nivel = random.Next(Caracteristicas.maxNivel) + 1;
-		Caracteristicas.Armadura = random.Next(Caracteristicas.maxArmadura) + 1;
+		Velocidad = random.Next(maxVelocidad) + 1;
+		Destreza = random.Next(maxDestreza) + 1;
+		Fuerza = random.Next(maxFuerza) + 1;
+		Nivel = random.Next(maxNivel) + 1;
+		Armadura = random.Next(maxArmadura) + 1;
 
-		Datos.Tipo = tipo;
-		Datos.Nombre = nombre;
-		Datos.Apodo = apodo;
-		Datos.FechaNac = fechanac;
-		Datos.Edad = CalcularEdad(fechanac);
-		Datos.Salud = random.Next(Datos.maxSalud + 1);
+		Tipo = tipo;
+		Nombre = nombre;
+		Apodo = apodo;
+		FechaNac = fechanac;
+		Edad = CalcularEdad(fechanac);
+		Salud = random.Next(maxSalud + 1);
+	}
+
+	public void MostrarPersonaje(){
+		Console.WriteLine("Datos:");
+		MostrarDatos();
+		Console.WriteLine("\nCaracteristicas:");
+		MostrarCaracteristicas();
+	}
+
+	public int CalcularEdad(DateTime fechanac){
+		DateTime ahora = DateTime.Now;
+		int edad = ahora.Year - fechaNac.Year;
+		if (ahora < fechaNac.AddYears(edad)) edad--;
+		return edad;
+	}
+}
+
+class MainClass{
+	public static void Main(){
+		Personaje Personaje1 = CrearPersonaje();
+		Personaje1.MostrarPersonaje();
+	}
+
+	public static Personaje CrearPersonaje(){
+		DateTime fecha;
+		string tipo, nombre, apodo, fec;
+		string pattern = @"(\d+)(/)(\d+)(/)(\d+)";
+
+		Console.Write("Tipo de personaje: ");
+		tipo = Console.ReadLine();
+		Console.Write("Nombre del personaje: ");
+		nombre = Console.ReadLine();
+		Console.Write("Apodo del personaje: ");
+		apodo = Console.ReadLine();
+
+		Console.Write("Fecha de nacimiento (dd/mm/año): ");
+		fec = Console.ReadLine();
+
+		Match fechanac = System.Text.RegularExpressions.Regex.Match(fec, pattern);
+		if(fechanac.Success){
+			int dia = Convert.ToInt16(fechanac.Groups[1].Value);
+			int mes = Convert.ToInt16(fechanac.Groups[3].Value);
+			int anio = Convert.ToInt16(fechanac.Groups[5].Value);
+
+			fecha = new DateTime(anio,mes,dia);
+		}else{
+      fecha = DateTime.Now;
+    }
+
+		Personaje Personaje1 = new Personaje(tipo,nombre,apodo,fecha);
+		return Personaje1;
 	}
 }
