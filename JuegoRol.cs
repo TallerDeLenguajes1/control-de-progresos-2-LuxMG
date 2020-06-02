@@ -5,7 +5,7 @@ class Personaje{
 		private static string tipo;
 		private static string nombre;
 		private static string apodo;
-		private static string fechaNac;
+		private static DateTime fechaNac;
 		private static int edad;
 		private static int salud;
 
@@ -15,18 +15,9 @@ class Personaje{
 		public string Tipo{get; set;};
 		public string Nombre{get; set;};
 		public string Apodo{get; set;};
-		public string FechaNac{get; set;};
+		public DateTime FechaNac{get; set;};
 		public int Edad{get; set;};
 		public int Salud{get; set;};
-
-		public Datos(string t, string n, string a, string fn, int e, int s) {
-			Tipo = t;
-			Nombre = n;
-			Apodo = a;
-			FechaNac = fn;
-			Edad = e;
-			Salud = s;
-		}
 
 		public void MostrarDatos() {
 			Console.WriteLine("Tipo: " + Tipo);
@@ -57,14 +48,6 @@ class Personaje{
 		public int Nivel{get; set;};
 		public int Armadura{get; set;};
 
-		public Caracteristicas(int v, int d, int f, int n, int a) {
-			Velocidad = v;
-			Destreza = d;
-			Fuerza = f;
-			Nivel = n;
-			Armadura = a;
-		}
-
 		public void MostrarCaracteristicas() {
 			Console.WriteLine("Velocidad: " + Velocidad);
 			Console.WriteLine("Destreza: " + Destreza);
@@ -72,5 +55,21 @@ class Personaje{
 			Console.WriteLine("Nivel: " + Nivel);
 			Console.WriteLine("Armadura: " + Armadura);
 		}
+	}
+
+	public Personaje(string tipo, string nombre, string apodo, DateTime fechanac){
+		Random random = new Random(Environment.TickCount);
+		Caracteristicas.Velocidad = random.Next(Caracteristicas.maxVelocidad) + 1;
+		Caracteristicas.Destreza = random.Next(Caracteristicas.maxDestreza) + 1;
+		Caracteristicas.Fuerza = random.Next(Caracteristicas.maxFuerza) + 1;
+		Caracteristicas.Nivel = random.Next(Caracteristicas.maxNivel) + 1;
+		Caracteristicas.Armadura = random.Next(Caracteristicas.maxArmadura) + 1;
+
+		Datos.Tipo = tipo;
+		Datos.Nombre = nombre;
+		Datos.Apodo = apodo;
+		Datos.FechaNac = fechanac;
+		Datos.Edad = CalcularEdad(fechanac);
+		Datos.Salud = random.Next(Datos.maxSalud + 1);
 	}
 }
