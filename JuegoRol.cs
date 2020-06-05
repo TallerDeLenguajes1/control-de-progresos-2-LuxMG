@@ -115,14 +115,15 @@ class Personaje{
 }
 
 class MainClass{
-	public static List<Personaje> ListaPersonajes = new List<Personaje>();
+	public static LinkedList<Personaje> ListaPersonajes = new LinkedList<Personaje>();
 	public static Random random = new Random(Environment.TickCount);
 
 	public static void Main(){
 		//GENERACION DE PERSONAJES
+		int n = 0;
 		Console.Write("Ingrese el numero de jugadores: ");
 		try{
-			int n = Convert.ToInt16(Console.ReadLine());
+			n = Convert.ToInt16(Console.ReadLine());
 		}
 		catch(System.FormatException){
 			Console.Write("Asegurese de ingresar correctamente un numero de jugadores: ");
@@ -133,32 +134,32 @@ class MainClass{
 		Personaje Persona = CrearPersonaje();
 		Console.WriteLine();
 		Persona.MostrarPersonaje();
-		ListaPersonajes.Add(Persona);
+		ListaPersonajes.AddLast(Persona);
 
 		for(int i = 0; i < n-1; i++){
 			Console.WriteLine("---------------------------------");
 			Personaje IA = CrearPersonajeIA();
 			IA.MostrarPersonaje();
-			ListaPersonajes.Add(IA);
+			ListaPersonajes.AddLast(IA);
 		}
 
 		Console.WriteLine("---------------------------------");
-		Random random = new Random(Environment.TickCount);
 		int cantPers = ListaPersonajes.Count;
 		//EMPIEZA LA PELEA
 		while(cantPers > 1){
-			int aux1 = random.Next(cantPers);
-			int aux2 = random.Next(cantPers);
-			while(aux1 == aux2) aux2 = random.Next(cantPers);
-
-			Combate(ListaPersonajes[aux1], ListaPersonajes[aux2]);
+			LinkedListNode<Personaje> Pers1 = ListaPersonajes.First;
+			Personaje Personaje1 = Pers1.Value;
+			LinkedListNode<Personaje> Pers2 = ListaPersonajes.Last;
+			Personaje Personaje2 = Pers2.Value;
+			Combate(Personaje1, Personaje2);
 			Console.WriteLine("---------------------------------");
 			cantPers = ListaPersonajes.Count;
 			Console.ReadLine();
 		}
 
-		Persona = ListaPersonajes[0];
-		Console.WriteLine("\nEl ganador de esta épica batalla fue: " + Persona.Nombre + " \"" + Persona.Apodo + "\"\nFelicidades!");
+		LinkedListNode<Personaje> ganador = ListaPersonajes.First;
+		Personaje Ganador = ganador.Value;
+		Console.WriteLine("\nEl ganador de esta épica batalla fue: " + Ganador.Nombre + " \"" + Ganador.Apodo + "\"\nFelicidades!");
 
 		ListaPersonajes.Clear();
 	}
@@ -210,10 +211,10 @@ class MainClass{
 		int PDEF = Defensor.Armadura * Defensor.Velocidad;
 
 		int MDP = 50000;
-		int DP = (VA * ED - PDEF) / (MDP * 100);
+		float DP = ((VA * ED - PDEF) / MDP) * 100;
 
 		if(DP <= MDP){
-			return DP;
+			return Convert.ToInt16(DP);
 		}else{
 			return MDP;
 		}
