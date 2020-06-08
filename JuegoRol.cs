@@ -9,12 +9,12 @@ class Personaje{
 	public static Random random = new Random(Environment.TickCount);
 
 	//DATOS:
-	private static string tipo;
-	private static string nombre;
-	private static string apodo;
-	private static DateTime fechaNac;
-	private static int edad;
-	private static int salud;
+	private string tipo;
+	private string nombre;
+	private string apodo;
+	private DateTime fechaNac;
+	private int edad;
+	private int salud;
 
 	public const int maxEdad = 300;
 	public const int maxSalud = 100;
@@ -33,11 +33,11 @@ class Personaje{
 	public const int maxNivel = 10;
 	public const int maxArmadura = 10;
 
-	private static int velocidad;
-	private static int destreza;
-	private static int fuerza;
-	private static int nivel;
-	private static int armadura;
+	private int velocidad;
+	private int destreza;
+	private int fuerza;
+	private int nivel;
+	private int armadura;
 
 	public int Velocidad{get => velocidad; set => velocidad = value;}
 	public int Destreza{get => destreza; set => destreza = value;}
@@ -115,7 +115,7 @@ class Personaje{
 }
 
 class MainClass{
-	public static LinkedList<Personaje> ListaPersonajes = new LinkedList<Personaje>();
+	public static List<Personaje> ListaPersonajes = new List<Personaje>();
 	public static Random random = new Random(Environment.TickCount);
 
 	public static void Main(){
@@ -134,34 +134,44 @@ class MainClass{
 		Personaje Persona = CrearPersonaje();
 		Console.WriteLine();
 		Persona.MostrarPersonaje();
-		ListaPersonajes.AddLast(Persona);
 
 		for(int i = 0; i < n-1; i++){
 			Console.WriteLine("---------------------------------");
 			Personaje IA = CrearPersonajeIA();
 			IA.MostrarPersonaje();
-			ListaPersonajes.AddLast(IA);
 		}
 
 		Console.WriteLine("---------------------------------");
 		int cantPers = ListaPersonajes.Count;
+		int aux1, aux2;
 		//EMPIEZA LA PELEA
 		while(cantPers > 1){
-			LinkedListNode<Personaje> Pers1 = ListaPersonajes.First;
-			Personaje Personaje1 = Pers1.Value;
-			LinkedListNode<Personaje> Pers2 = ListaPersonajes.Last;
-			Personaje Personaje2 = Pers2.Value;
-			Combate(Personaje1, Personaje2);
+			aux1 = random.Next(cantPers);
+			do{
+				aux2 = random.Next(cantPers);
+			}while(aux1==aux2);
+
+			Combate(ListaPersonajes[aux1], ListaPersonajes[aux2]);
 			Console.WriteLine("---------------------------------");
 			cantPers = ListaPersonajes.Count;
 			Console.ReadLine();
 		}
 
-		LinkedListNode<Personaje> ganador = ListaPersonajes.First;
-		Personaje Ganador = ganador.Value;
-		Console.WriteLine("\nEl ganador de esta épica batalla fue: " + Ganador.Nombre + " \"" + Ganador.Apodo + "\"\nFelicidades!");
+		try{
+			Personaje Ganador = ListaPersonajes[0];
+			if(Ganador.Salud > 0){
+				Console.WriteLine("\nEl ganador de esta épica batalla fue: " + Ganador.Nombre + " \"" + Ganador.Apodo + "\"\nFelicidades!");
+			}else{
+				Console.WriteLine("\nPor un inesperado giro de los acontecimientos no hubo ningun ganador!");
+			}
 
+		}
+		catch(System.ArgumentOutOfRangeException){
+			Console.WriteLine("\nPor un inesperado giro de los acontecimientos no hubo ningun ganador!");
+		}
+		Console.WriteLine("\n\n");
 		ListaPersonajes.Clear();
+		Console.ReadLine();
 	}
 
 	//CREACION DE PERSONAJES
@@ -181,6 +191,7 @@ class MainClass{
 		apodo = Console.ReadLine();
 
 		Personaje Personaje1 = new Personaje(tipo,nombre,apodo);
+		ListaPersonajes.Add(Personaje1);
 		return Personaje1;
 	}
 
@@ -200,6 +211,7 @@ class MainClass{
 		apodo = Enum.GetNames(apodosIA)[t];
 
 		Personaje PersonajeIA = new Personaje(tipo,nombre,apodo);
+		ListaPersonajes.Add(PersonajeIA);
 		return PersonajeIA;
 	}
 
@@ -207,11 +219,11 @@ class MainClass{
 	static public int Ataque(Personaje Atacante, Personaje Defensor){
 		int PD = Atacante.Destreza * Atacante.Fuerza * Atacante.Nivel;
 		int ED = random.Next(100) + 1;
-		int VA = PD * ED;
+		float VA = PD * ED;
 		int PDEF = Defensor.Armadura * Defensor.Velocidad;
 
 		int MDP = 50000;
-		float DP = ((VA * ED - PDEF) / MDP) * 100;
+		float DP = (VA + ED - PDEF) * 100 / MDP;
 
 		if(DP <= MDP){
 			return Convert.ToInt16(DP);
@@ -221,7 +233,7 @@ class MainClass{
 	}
 
 	static public void Combate(Personaje Pers1, Personaje Pers2){
-		Console.WriteLine("Inicio del combate:");
+		Console.WriteLine("\bInicio del combate:");
 		Console.WriteLine(Pers1.Nombre + " \"" + Pers1.Apodo + "\": " + Pers1.Salud + " HP");
 		Console.WriteLine(Pers2.Nombre + " \"" + Pers2.Apodo + "\": " + Pers2.Salud + " HP");
 
@@ -236,16 +248,12 @@ class MainClass{
 			if(Pers1.Salud<=0 || Pers2.Salud<=0) i=5;//combate termina
 		}
 
+		Console.WriteLine();
+
 		if(Pers1.Salud > Pers2.Salud){
 			Console.WriteLine(Pers1.Nombre + " \"" + Pers1.Apodo + "\" ganó la batalla!");
 			Console.Write(Pers1.Nombre + " \"" + Pers1.Apodo + "\" : ");
 			OtorgarMejora(Pers1);
-
-			if(Pers2.Salud < 0){
-				Console.WriteLine("\n" + Pers2.Nombre + " \"" + Pers2.Apodo + "\" ya no puede continuar.");
-			}else{
-				Console.WriteLine("\n" + Pers2.Nombre + " \"" + Pers2.Apodo + "\" se retira de la batalla.");
-			}
 
 			ListaPersonajes.Remove(Pers2);
 		}else if(Pers2.Salud > Pers1.Salud){
@@ -253,25 +261,20 @@ class MainClass{
 			Console.Write(Pers2.Nombre + " \"" + Pers2.Apodo + "\" : ");
 			OtorgarMejora(Pers2);
 
-			if(Pers1.Salud < 0){
-				Console.WriteLine("\n" + Pers1.Nombre + " \"" + Pers1.Apodo + "\" ya no puede continuar.");
-			}else{
-				Console.WriteLine("\n" + Pers1.Nombre + " \"" + Pers1.Apodo + "\" se retira de la batalla.");
-			}
-
 			ListaPersonajes.Remove(Pers1);
 		}else{
 			Console.WriteLine("Increiblemente, hubo un empate!\nAmbos jugadores podrán seguir participando (si siguen vivos).");
-			if(Pers1.Salud < 0){
-				ListaPersonajes.Remove(Pers1);
-				Console.WriteLine("\n" + Pers1.Nombre + " \"" + Pers1.Apodo + "\" ya no puede continuar.");
-			}
-			if(Pers2.Salud < 0){
-				ListaPersonajes.Remove(Pers2);
-				Console.WriteLine("\n" + Pers2.Nombre + " \"" + Pers2.Apodo + "\" ya no puede continuar.");
-			}
 		}
-	}
+
+		if(Pers1.Salud <= 0){
+			Console.WriteLine("\n" + Pers1.Nombre + " \"" + Pers1.Apodo + "\" ya no puede continuar.");
+			ListaPersonajes.Remove(Pers1);
+		}
+		if(Pers2.Salud <= 0){
+			Console.WriteLine("\n" + Pers2.Nombre + " \"" + Pers2.Apodo + "\" ya no puede continuar.");
+			ListaPersonajes.Remove(Pers2);
+		}
+}
 
 	static public void OtorgarMejora(Personaje Pers){
 		int i = random.Next(10);
